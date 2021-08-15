@@ -1,44 +1,52 @@
-const loginForm = document.querySelector('#welcome-form');
-const messagesSection =document.querySelector('#messages-section');
-const messagesList = messagesSection.querySelector('#messages-list');
-const addMessageForm = messagesSection.querySelector('#add-messages-form');
-const userNameInput = loginForm.querySelector('#username');
-const messageContentInput = addMessageForm.querySelector('#message-content');
+const loginForm = document.getElementById('welcome-form');
+const messagesSection = document.getElementById('messages-section');
+const messagesList = document.getElementById('messages-list');
+const addMessageForm = document.getElementById('add-messages-form');
+const userNameInput = document.getElementById('username');
+const messageContentInput = document.getElementById('message-content');
 
 let userName = '';
 
-const login = (e) => {
-    e.preventDefault();
-    if(userNameInput.value === userName){
-        alert('Please enter Your login');
-    } else {
-        userName = userNameInput.value;
-        loginForm.classList.remove('show');
-        messagesSection.classList.add('show');
-    }
+const socket = io();
+socket.on('message', ({ author, content }) => addMessage(author, content));
+socket.on('joinNewUser', ({ author, content }) => addMessage(author, content));
+socket.on('userLeft', ({ author, content }) => addMessage(author, content));
 
+const login = e => {
+  e.preventDefault();
+  if (userNameInput.value) {
+    userName = userNameInput.value;
+    loginForm.classList.remove('show');
+    messagesSection.classList.add('show');
+    socket.emit('join', userName);
+  } else {
+    alert('You have to type your name!')
+  }
 }
 loginForm.addEventListener('submit', login);
 
-function addMessage(author, content) {
-    const message = document.createElement('li');
-    message.classList.add('message');
-    author === userName ? message.classList.add('message--self') : message.classList.add('message--recieved'); 
-    message.innerHTML = 
-        `<h3 class="message__author">${userName === author ? 'You' : author }</h3>
-        <div class="message__content">
-            ${content}
-        </div>`;
-    messagesList.appendChild(message);
+const sendMessage = e => {
+  e.preventDefault();
+  if (messageContentInput.value) {
+    addMessage(userName, messageContentInput.value);
+    socket.emit('message', { author: userName, content: messageContentInput.value });
+    messageContentInput.value = '';
+  } else {
+    alert('You have to type message!')
   }
-
-const sendMessage = (e) => {
-    e.preventDefault();
-    if(messageContentInput.value === ''){
-        alert('Please type Your message');
-    } else{
-        addMessage(userName, messageContentInput.value);
-        messageContentInput.value = '';
-    } 
 }
 addMessageForm.addEventListener('submit', sendMessage);
+
+function addMessage(author, content) {
+  const message = document.createElement('li');
+  message.classList.add('message');
+  message.classList.add('message--received');
+  if(author === userName) {} message.classList.add('message--self');
+  if(author === 'ChatBot') message.classList.add('message--bot');
+
+  message.innerHTML = `
+    <h3 class="message__author">${userName === author ? 'You' : author}</h3>
+    <div class="message__content">${content}</div>
+  `;
+  messagesList.appendChild(message);
+}

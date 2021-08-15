@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +9,12 @@
 </head>
 <body>
   <main id="app">
+
     <!-- HEADER -->
     <header>
       <h1>Chat.app</h1>
     </header>
+
     <!-- WELCOME FORM -->
     <form id="welcome-form" class="welcome-form show">
       <h2>Log in</h2>
@@ -24,12 +28,6 @@
 
       <!-- messages list -->
       <ul class="messages-section__list" id="messages-list">
-        <li class="message">
-          <h3 class="message__author">John Doe</h3>
-          <div class="message__content">
-            Hello!
-          </div>
-        </li>
       </ul>
 
       <!-- messages form -->
@@ -41,7 +39,7 @@
     </section>
 
   </main>
-  <script src="./app.js"></script>
-  <!-- type="module" -->
+  <script src="app.js" type="module"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 </body>
 </html>
